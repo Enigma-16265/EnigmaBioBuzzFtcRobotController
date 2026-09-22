@@ -15,6 +15,8 @@ enum BallColors {
 @TeleOp
 public class DualColorSensorTest extends OpMode {
     private RevColorSensorV3 colorSensor1;
+    private BallColors currentColorGuess = BallColors.UNKNOWN;
+    private BallColors lastSeen = BallColors.UNKNOWN;
 
     NormalizedRGBA colors;
 
@@ -39,7 +41,8 @@ public class DualColorSensorTest extends OpMode {
     }
 
     private void telemetry() {
-        telemetry.addData("guess", colorDetection());
+        telemetry.addData("current guess", currentColorGuess);
+        telemetry.addData("last seen", lastSeen);
 
         telemetry.update();
     }
@@ -49,7 +52,13 @@ public class DualColorSensorTest extends OpMode {
         r = colors.red;
         g = colors.green;
         b = colors.blue;
+
+        currentColorGuess = colorDetection();
+        if(currentColorGuess != BallColors.UNKNOWN) {
+            lastSeen = currentColorGuess;
+        }
     }
+
 
     @Override
     public void init() {
@@ -59,7 +68,6 @@ public class DualColorSensorTest extends OpMode {
     @Override
     public void loop() {
         updateRGB();
-        colorDetection();
         telemetry();
     }
 }
