@@ -27,26 +27,27 @@ public class DualColorSensorTest extends OpMode {
     float r, g, b;
 
 
-
+    private boolean xBetween(double x, double lowValue, double highValue) {
+        return (x >= lowValue && x <= highValue);
+    }
 
     private BallColors colorDetection() {
-        /*
-        if(hue < 17 || hue > 320) {
+        if(xBetween(hue, 50, 330) && hue != 0) {
             return BallColors.RED;
         }
-        if(hue < 270 && hue > 170) {
+        if(xBetween(hue, 170, 270)) {
             return BallColors.BLUE;
         }
-        if(hue < 80 && hue > 33) {
+        if(xBetween(hue, 80, 120)) {
             return BallColors.YELLOW;
         }
         else {
             return BallColors.UNKNOWN;
         }
 
-         */
 
 
+        /*
         if (r > g * 1.4 && r > b * 1.4) {
             return BallColors.RED;
         }
@@ -60,12 +61,15 @@ public class DualColorSensorTest extends OpMode {
             return BallColors.UNKNOWN;
         }
 
+         */
+
 
     }
 
     private void telemetry() {
         telemetry.addData("current guess", currentColorGuess);
         telemetry.addData("last seen", lastSeen);
+        telemetry.addData("hue", hue);
 
         telemetry.update();
     }
@@ -73,7 +77,7 @@ public class DualColorSensorTest extends OpMode {
     private void updateRGB() {
         colors = colorSensor1.getNormalizedColors();
 
-        //hue = (float) JavaUtil.colorToHue(colors.toColor());
+        hue = (float) JavaUtil.colorToHue(colors.toColor());
 
 
         r = colors.red;
