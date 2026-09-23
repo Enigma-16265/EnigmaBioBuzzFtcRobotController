@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.tests;
 
+import android.hardware.camera2.params.BlackLevelPattern;
+
+import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -17,6 +20,7 @@ public class DualColorSensorTest extends OpMode {
     private RevColorSensorV3 colorSensor1;
     private BallColors currentColorGuess = BallColors.UNKNOWN;
     private BallColors lastSeen = BallColors.UNKNOWN;
+    private float hue;
 
     NormalizedRGBA colors;
 
@@ -26,6 +30,23 @@ public class DualColorSensorTest extends OpMode {
 
 
     private BallColors colorDetection() {
+        /*
+        if(hue < 17 || hue > 320) {
+            return BallColors.RED;
+        }
+        if(hue < 270 && hue > 170) {
+            return BallColors.BLUE;
+        }
+        if(hue < 80 && hue > 33) {
+            return BallColors.YELLOW;
+        }
+        else {
+            return BallColors.UNKNOWN;
+        }
+
+         */
+
+
         if (r > g * 1.4 && r > b * 1.4) {
             return BallColors.RED;
         }
@@ -38,6 +59,8 @@ public class DualColorSensorTest extends OpMode {
         else {
             return BallColors.UNKNOWN;
         }
+
+
     }
 
     private void telemetry() {
@@ -49,6 +72,10 @@ public class DualColorSensorTest extends OpMode {
 
     private void updateRGB() {
         colors = colorSensor1.getNormalizedColors();
+
+        //hue = (float) JavaUtil.colorToHue(colors.toColor());
+
+
         r = colors.red;
         g = colors.green;
         b = colors.blue;
