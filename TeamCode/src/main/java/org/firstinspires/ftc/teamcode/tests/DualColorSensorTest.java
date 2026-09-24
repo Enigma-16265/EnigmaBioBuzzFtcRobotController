@@ -32,13 +32,13 @@ public class DualColorSensorTest extends OpMode {
     }
 
     private BallColors colorDetection() {
-        if(xBetween(hue, 50, 330) && hue != 0) {
+        if((hue < 50 || hue > 330) && hue != 0) {
             return BallColors.RED;
         }
-        if(xBetween(hue, 170, 270)) {
+        if(hue < 270 && hue > 170) {
             return BallColors.BLUE;
         }
-        if(xBetween(hue, 80, 120)) {
+        if(hue < 120 && hue > 80) {
             return BallColors.YELLOW;
         }
         else {
