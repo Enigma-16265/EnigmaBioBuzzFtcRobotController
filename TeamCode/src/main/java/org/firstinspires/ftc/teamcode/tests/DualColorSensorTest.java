@@ -3,17 +3,14 @@ package org.firstinspires.ftc.teamcode.tests;
 import android.hardware.camera2.params.BlackLevelPattern;
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
+import org.firstinspires.ftc.teamcode.enums.BallColors;
+
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 
-enum BallColors {
-    RED,
-    BLUE,
-    YELLOW,
-    UNKNOWN
-}
+
 
 @TeleOp
 public class DualColorSensorTest extends OpMode {
