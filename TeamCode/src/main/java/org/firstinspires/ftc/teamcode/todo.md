@@ -1,0 +1,6 @@
+- continue integrating ivy into teleop
+- make auto paths
+- transfer LLRotateSimple stuff into Vision (and drive)
+- make sure ivy is all well and good
+- continue adding theory code to intake and shooter
+- transfer tele commands to auto

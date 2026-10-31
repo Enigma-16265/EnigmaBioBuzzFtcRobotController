@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
+import com.pedropathing.ivy.Scheduler;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.enums.Alliances;
@@ -32,7 +33,10 @@ public class Tele extends OpMode {
     public void loop() {
         r.periodic();
         r.d.drive(gamepad1);
+        r.i.runIntake(gamepad1);
+        Scheduler.schedule(r.s.runShooters);
 
+        Scheduler.execute();
         telemetry();
     }
 

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.pedropathing.controllers.Controller;
+import com.pedropathing.ivy.Command;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -10,8 +11,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
  * This class handles everything related to the shooter, including a potential turret.
  */
 public class Shooter {
-    private HardwareMap hardwareMap;
-    private Gamepad gamepad1;
     private PIDController pollenController, nectarController;
     private int pollenTargetSpeed = 800, nectarTargetSpeed = 1100;
     private final double pP = 0.0, pI = 0.0, pD = 0.0;
@@ -23,9 +22,6 @@ public class Shooter {
 
         pollenShooter = hardwareMap.get(DcMotorEx.class, "pollenShooter");
         nectarShooter = hardwareMap.get(DcMotorEx.class, "nectarShooter");
-
-        this.hardwareMap = hardwareMap;
-        this.gamepad1 = gamepad1;
     }
 
     public void runPollenShooterPID() {
@@ -46,6 +42,9 @@ public class Shooter {
         shooterPid = Math.max(shooterPid, -0.2);
         nectarShooter.setPower(shooterPid);
     }
+
+    public Command runShooters = Command.build()
+            .setExecute(this::runShooterPIDs);
 
     public void runShooterPIDs() {
         runPollenShooterPID();
