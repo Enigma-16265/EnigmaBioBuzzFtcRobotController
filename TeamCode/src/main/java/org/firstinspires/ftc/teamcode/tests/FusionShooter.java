@@ -4,16 +4,12 @@ import androidx.annotation.NonNull;
 
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.bylazar.telemetry.TelemetryManager;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.components.Shooter;
-import org.firstinspires.ftc.teamcode.enums.BallColors;
 import org.firstinspires.ftc.teamcode.enums.BallTypes;
 
 public class FusionShooter { //this will need to be expanded upon if we do use. eg, auto waiting for x milliseconds for hood to adjust before feeding
