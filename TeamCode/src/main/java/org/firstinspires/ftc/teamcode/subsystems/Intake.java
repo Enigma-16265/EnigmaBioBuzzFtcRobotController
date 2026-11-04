@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import com.pedropathing.ivy.Command;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -10,12 +11,25 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
  */
 public class Intake {
     private DcMotor intakeLeft, intakeRight;
-    private double INTAKE_POWER = 0.8;
-    private double OUTTAKE_POWER = -0.4;
+    private final double INTAKE_POWER = 0.8;
+    private final double FEED_POWER = 0.6;
+    private final double OUTTAKE_POWER = -0.4;
     public Intake(HardwareMap hardwareMap) {
         intakeLeft = hardwareMap.get(DcMotor.class, "intakeLeft");
         intakeRight = hardwareMap.get(DcMotor.class, "intakeRight");
     }
+
+    public Command setFeeding = Command.build()
+            .setStart(() -> {
+                setPower(FEED_POWER);
+            })
+            .setDone(() -> true);
+
+    public Command stopIntake = Command.build()
+            .setStart(() -> {
+                setPower(0);
+            })
+            .setDone(() -> true);
 
     private void setPower(double power) {
         intakeLeft.setPower(power);

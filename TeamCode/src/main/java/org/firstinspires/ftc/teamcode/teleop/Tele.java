@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
+import static com.pedropathing.ivy.commands.Commands.waitMs;
+import static com.pedropathing.ivy.groups.Groups.sequential;
+
+import com.pedropathing.ivy.Command;
 import com.pedropathing.ivy.Scheduler;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
@@ -19,6 +23,15 @@ public class Tele extends OpMode {
         telemetry.update();
     }
 
+    private Command shoot = sequential(
+            r.s.openGates,
+            waitMs(150),
+            r.i.setFeeding,
+            waitMs(450),
+            r.i.stopIntake,
+            r.s.closeGates
+    );
+
     @Override
     public void init() {
         r = new Robot(hardwareMap, alliance);
@@ -34,7 +47,11 @@ public class Tele extends OpMode {
         r.periodic();
         r.d.drive(gamepad1);
         r.i.runIntake(gamepad1);
-        Scheduler.schedule(r.s.runShooters);
+        r.s.runShooterPIDs();
+
+        if(gamepad1.xWasPressed()) {
+            Scheduler.schedule(shoot);
+        }
 
         Scheduler.execute();
         telemetry();
