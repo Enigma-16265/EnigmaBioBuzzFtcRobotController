@@ -19,6 +19,10 @@ public class Tele extends OpMode {
     }
 
     private void telemetry() {
+        telemetry.addData("Pollen Shooter Speed", r.s.getPollenShooterVelocity());
+        telemetry.addData("Nectar Shooter Speed", r.s.getNectarShooterVelocity());
+        telemetry.addData("Pollen Hood Pos", r.s.getPollenHoodPos());
+        telemetry.addData("Nectar Hood Pos", r.s.getNectarHoodPos());
 
         telemetry.update();
     }

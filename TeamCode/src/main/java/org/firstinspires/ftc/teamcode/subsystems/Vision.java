@@ -72,7 +72,7 @@ public class Vision {
         limelight.stop();
     }
 
-    public void updateVision() {
+    public void updateVision() { //vision? holy gd ref
         latestResult = limelight.getLatestResult();
 
         fiducialResults = latestResult != null
