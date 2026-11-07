@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.teleop;
 import static com.pedropathing.ivy.commands.Commands.waitMs;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 
+import com.pedropathing.api.Paths;
 import com.pedropathing.ivy.Command;
 import com.pedropathing.ivy.Scheduler;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -35,6 +36,20 @@ public class Tele extends OpMode {
             r.i.stopIntake,
             r.s.closeGates
     );
+    private Command turnToGoal() {
+        return Command.build()
+                .setExecute(() -> {
+                    if(r.v.canSeeUprightAllianceCell(alliance)) {
+                        r.d.turnToHeadingInPlace(r.v);
+                    }
+                    else {
+                        r.d.turnToHeadingInPlace(r.d.getHeadingToPoint(alliance));
+                    }
+                })
+                .setDone(() ->
+                    r.v.withinDeadzone()
+                );
+    }
 
     @Override
     public void init() {
@@ -55,6 +70,9 @@ public class Tele extends OpMode {
 
         if(gamepad1.xWasPressed()) {
             Scheduler.schedule(shoot);
+        }
+        if(gamepad1.aWasPressed()) {
+            Scheduler.schedule(turnToGoal());
         }
 
         Scheduler.execute();

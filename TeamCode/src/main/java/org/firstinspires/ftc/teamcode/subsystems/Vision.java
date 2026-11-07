@@ -73,7 +73,12 @@ public class Vision {
     }
 
     public double getNeededHeading(Follower follower) {
-        return follower.pose().heading() - limelight.getLatestResult().getTx();
+        double heading = follower.pose().heading() - limelight.getLatestResult().getTx();
+        return heading;
+    }
+
+    public boolean withinDeadzone() {
+        return Math.abs(estimatedCenterTx) < DEADZONE;
     }
 
     public boolean canSeeUprightAllianceCell(Alliances alliance) {
