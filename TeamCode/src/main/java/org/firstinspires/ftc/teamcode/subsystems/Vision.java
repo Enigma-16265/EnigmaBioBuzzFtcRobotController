@@ -72,6 +72,48 @@ public class Vision {
         limelight.stop();
     }
 
+    public double getNeededHeading(Follower follower) {
+        return follower.pose().heading() - limelight.getLatestResult().getTx();
+    }
+
+    public boolean canSeeUprightAllianceCell(Alliances alliance) {
+        if (fiducialResults == null) {
+            return false;
+        }
+
+        int[] aprilTagIds = new int[fiducialResults.size()];
+        int index = 0;
+
+        for (LLResultTypes.FiducialResult tag : fiducialResults) {
+            aprilTagIds[index++] = tag.getFiducialId();
+        }
+
+        AprilTagData.Cluster[] allianceClusters;
+
+        if (alliance == Alliances.BLUE) {
+            allianceClusters = new AprilTagData.Cluster[]{
+                    AprilTagData.Cluster.BLUE_AUDIENCE,
+                    AprilTagData.Cluster.BLUE_WALL
+            };
+        }
+        else {
+            allianceClusters = new AprilTagData.Cluster[]{
+                    AprilTagData.Cluster.RED_AUDIENCE,
+                    AprilTagData.Cluster.RED_WALL
+            };
+        }
+
+        for (int id : aprilTagIds) {
+            for (AprilTagData.Cluster cluster : allianceClusters) {
+                if (cluster.contains(id)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     public void updateVision() { //vision? holy gd ref
         latestResult = limelight.getLatestResult();
 

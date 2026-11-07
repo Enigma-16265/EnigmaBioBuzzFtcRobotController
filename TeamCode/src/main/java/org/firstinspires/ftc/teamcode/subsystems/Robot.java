@@ -30,11 +30,6 @@ public class Robot {
         this.alliance = alliance;
     }
 
-
-    public Command shoot = sequential(
-
-    );
-
     public void periodic() {
         d.periodic();
     }
