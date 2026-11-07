@@ -95,26 +95,28 @@ public class Bauto extends OpMode {
         return Command.build().setDone(() -> true);
     }
 
-    private final Command shoot = sequential(
-            r.s.openGates,
-            waitMs(150),
-            r.i.setFeeding,
-            waitMs(450),
-            r.i.stopIntake,
-            r.s.closeGates,
-            setHasBalls(false)
-    );
+    private Command shoot() {
+        return sequential(
+                r.s.openGates,
+                waitMs(150),
+                r.i.setFeeding,
+                waitMs(450),
+                r.i.stopIntake,
+                r.s.closeGates,
+                setHasBalls(false)
+        );
+    }
 
     private Command autoRoutine() {
         //This is 1 - 1.5 tips
         return sequential(
                 follow(follower, strafeToShootPos()),
-                shoot,
+                shoot(),
                 follow(follower, pickupGarden()),
                 follow(follower, fromGardenToAudienceCell()),
-                conditional(() -> r.v.canSeeUprightAllianceCell(alliance), shoot, zilch()),
+                conditional(() -> r.v.canSeeUprightAllianceCell(alliance), shoot(), zilch()),
                 follow(follower, fromAudienceCellToWallCell()),
-                conditional(() -> hasBalls, shoot, zilch()),
+                conditional(() -> hasBalls, shoot(), zilch()),
                 follow(follower, prepareTeammatePush()),
                 follow(follower, pushTeammateAndPark())
         );

@@ -40,12 +40,12 @@ public class DummyShooter {
 
     public Command openGates = Command.build()
             .setStart(() -> {
-
+                runNectarShooterPID();
             })
             .setDone(() -> true);
     public Command closeGates = Command.build()
             .setStart(() -> {
-
+                runNectarShooterPID();
             })
             .setDone(() -> true);
 

@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Robot;
 
 //Jett was NOT here... omg omg he so tuff fr fr oml 6767 he the tuffest sigma losercore playlist listener
 public class Tele extends OpMode {
-    private Alliances alliance;
+    private final Alliances alliance;
     private Robot r;
     public Tele(Alliances alliance) {
         this.alliance = alliance;
@@ -24,32 +24,16 @@ public class Tele extends OpMode {
         telemetry.addData("Nectar Shooter Speed", r.s.getNectarShooterVelocity());
         telemetry.addData("Pollen Hood Pos", r.s.getPollenHoodPos());
         telemetry.addData("Nectar Hood Pos", r.s.getNectarHoodPos());
+        telemetry.addData("X", r.d.getPose().x());
+        telemetry.addData("Y", r.d.getPose().y());
+        telemetry.addData("Heading", Math.toDegrees(r.d.getPose().heading()));
+        telemetry.addData("can see upright cell", r.v.canSeeUprightAllianceCell(alliance));
+        telemetry.addData("within deadzone", r.v.withinDeadzone());
 
         telemetry.update();
     }
 
-    private Command shoot = sequential(
-            r.s.openGates,
-            waitMs(150),
-            r.i.setFeeding,
-            waitMs(450),
-            r.i.stopIntake,
-            r.s.closeGates
-    );
-    private Command turnToGoal() {
-        return Command.build()
-                .setExecute(() -> {
-                    if(r.v.canSeeUprightAllianceCell(alliance)) {
-                        r.d.turnToHeadingInPlace(r.v);
-                    }
-                    else {
-                        r.d.turnToHeadingInPlace(r.d.getHeadingToPoint(alliance));
-                    }
-                })
-                .setDone(() ->
-                    r.v.withinDeadzone()
-                );
-    }
+
 
     @Override
     public void init() {
@@ -67,12 +51,13 @@ public class Tele extends OpMode {
         r.d.drive(gamepad1);
         r.i.runIntake(gamepad1);
         r.s.runShooterPIDs();
+        r.v.updateVision();
 
         if(gamepad1.xWasPressed()) {
-            Scheduler.schedule(shoot);
+            Scheduler.schedule(r.shoot());
         }
         if(gamepad1.aWasPressed()) {
-            Scheduler.schedule(turnToGoal());
+            Scheduler.schedule(r.turnToGoal());
         }
 
         Scheduler.execute();

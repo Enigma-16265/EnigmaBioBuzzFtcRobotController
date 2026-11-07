@@ -60,12 +60,18 @@ public class Drive {
 
     public void turnToHeadingInPlace(double heading) {
         Pose toTurnTo = new Pose(follower.pose().x(), follower.pose().y(), heading);
-        follower.follow(Paths.line(follower.pose(), toTurnTo));
+        //follower.follow(Paths.line(follower.pose(), toTurnTo));
+        follower.hold(toTurnTo);
     }
 
     public void turnToHeadingInPlace(Vision v) {
         Pose toTurnTo = new Pose(follower.pose().x(), follower.pose().y(), v.getNeededHeading(follower));
-        follower.follow(Paths.line(follower.pose(), toTurnTo));
+        //follower.follow(Paths.line(follower.pose(), toTurnTo));
+        follower.hold(toTurnTo);
+    }
+
+    public Pose getPose() {
+        return follower.pose();
     }
 
     public void periodic() {

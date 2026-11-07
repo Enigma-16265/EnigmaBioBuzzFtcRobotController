@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import static com.pedropathing.ivy.commands.Commands.waitMs;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.ivy.Command;
+import com.pedropathing.ivy.CommandBuilder;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.enums.Alliances;
@@ -30,6 +32,30 @@ public class Robot {
         v = new Vision(hardwareMap, alliance);
 
         this.alliance = alliance;
+    }
+    public CommandBuilder shoot() {
+        return sequential(
+                s.openGates,
+                waitMs(150),
+                i.setFeeding,
+                waitMs(450),
+                i.stopIntake,
+                s.closeGates
+        );
+    }
+    public Command turnToGoal() {
+        return Command.build()
+                .setExecute(() -> {
+                    if(v.canSeeUprightAllianceCell(alliance)) {
+                        d.turnToHeadingInPlace(v);
+                    }
+                    else {
+                        d.turnToHeadingInPlace(d.getHeadingToPoint(alliance));
+                    }
+                })
+                .setDone(() ->
+                        v.withinDeadzone()
+                );
     }
 
     public void periodic() {

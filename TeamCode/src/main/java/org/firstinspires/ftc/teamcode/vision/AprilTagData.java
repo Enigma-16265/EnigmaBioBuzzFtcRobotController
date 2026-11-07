@@ -88,8 +88,11 @@ public class AprilTagData {
             return tagIds.length;
         }
 
-        public String getTagIds() {
+        public String getTagIdsString() {
             return Arrays.toString(tagIds);
+        }
+        public int[] getTagIds() {
+            return tagIds;
         }
     }
 }

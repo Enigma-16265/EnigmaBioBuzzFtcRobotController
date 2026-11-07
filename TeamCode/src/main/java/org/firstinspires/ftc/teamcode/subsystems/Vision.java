@@ -25,6 +25,7 @@ public class Vision {
     private boolean tracking = false;
 
     private int visibleTagCount = 0;
+    private int[] visibleNumberIds;
     private String visibleTagIds = "None";
 
     private double averageTx = 0.0;
@@ -73,8 +74,7 @@ public class Vision {
     }
 
     public double getNeededHeading(Follower follower) {
-        double heading = follower.pose().heading() - limelight.getLatestResult().getTx();
-        return heading;
+        return follower.pose().heading() - estimatedCenterTx;
     }
 
     public boolean withinDeadzone() {
@@ -82,15 +82,8 @@ public class Vision {
     }
 
     public boolean canSeeUprightAllianceCell(Alliances alliance) {
-        if (fiducialResults == null) {
+        if (fiducialResults == null || alliance == null) {
             return false;
-        }
-
-        int[] aprilTagIds = new int[fiducialResults.size()];
-        int index = 0;
-
-        for (LLResultTypes.FiducialResult tag : fiducialResults) {
-            aprilTagIds[index++] = tag.getFiducialId();
         }
 
         AprilTagData.Cluster[] allianceClusters;
@@ -100,15 +93,16 @@ public class Vision {
                     AprilTagData.Cluster.BLUE_AUDIENCE,
                     AprilTagData.Cluster.BLUE_WALL
             };
-        }
-        else {
+        } else {
             allianceClusters = new AprilTagData.Cluster[]{
                     AprilTagData.Cluster.RED_AUDIENCE,
                     AprilTagData.Cluster.RED_WALL
             };
         }
 
-        for (int id : aprilTagIds) {
+        for (LLResultTypes.FiducialResult tag : fiducialResults) {
+            int id = tag.getFiducialId();
+
             for (AprilTagData.Cluster cluster : allianceClusters) {
                 if (cluster.contains(id)) {
                     return true;
@@ -134,6 +128,7 @@ public class Vision {
         double totalCenterEstimate = 0.0;
 
         StringBuilder ids = new StringBuilder();
+        visibleNumberIds = new int[0];
 
         if (fiducialResults != null) {
             for (LLResultTypes.FiducialResult tag : fiducialResults) {
