@@ -64,7 +64,7 @@ public class Bauto extends OpMode {
     }
 
     public Path fromAudienceCellToWallCell() {
-        return Paths.line(fromGardenToAudienceCell, fromAudienceCellToWallCell).heading(Interpolator.piecewise().until(0.75, Interpolator.constant(fromAudienceCellToWallCellSegment1Heading)).until(1, Interpolator.linear(fromAudienceCellToWallCellSegment2Start, fromAudienceCellToWallCellSegment2End)));
+        return Paths.line(fromGardenToAudienceCell, fromAudienceCellToWallCell).heading(Interpolator.piecewise().until(0.6, Interpolator.constant(fromAudienceCellToWallCellSegment1Heading)).until(1, Interpolator.linear(fromAudienceCellToWallCellSegment2Start, fromAudienceCellToWallCellSegment2End)));
     }
 
     public Path prepareTeammatePush() {

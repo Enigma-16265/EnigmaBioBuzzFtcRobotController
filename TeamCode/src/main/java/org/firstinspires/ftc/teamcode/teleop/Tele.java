@@ -20,15 +20,20 @@ public class Tele extends OpMode {
     }
 
     private void telemetry() {
-        telemetry.addData("Pollen Shooter Speed", r.s.getPollenShooterVelocity());
-        telemetry.addData("Nectar Shooter Speed", r.s.getNectarShooterVelocity());
-        telemetry.addData("Pollen Hood Pos", r.s.getPollenHoodPos());
-        telemetry.addData("Nectar Hood Pos", r.s.getNectarHoodPos());
+//        telemetry.addData("Pollen Shooter Speed", r.s.getPollenShooterVelocity());
+//        telemetry.addData("Nectar Shooter Speed", r.s.getNectarShooterVelocity());
+//        telemetry.addData("Pollen Hood Pos", r.s.getPollenHoodPos());
+//        telemetry.addData("Nectar Hood Pos", r.s.getNectarHoodPos());
         telemetry.addData("X", r.d.getPose().x());
         telemetry.addData("Y", r.d.getPose().y());
         telemetry.addData("Heading", Math.toDegrees(r.d.getPose().heading()));
         telemetry.addData("can see upright cell", r.v.canSeeUprightAllianceCell(alliance));
         telemetry.addData("within deadzone", r.v.withinDeadzone());
+        for(int i : r.v.getVisibleNumberIds()) {
+            telemetry.addData("id", i);
+        }
+        telemetry.addData("vision ids", r.v.getVisibleNumberIds());
+        telemetry.addData("tx", r.v.getTx());
 
         telemetry.update();
     }

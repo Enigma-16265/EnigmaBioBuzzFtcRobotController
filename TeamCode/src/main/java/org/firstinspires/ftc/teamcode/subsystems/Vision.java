@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.enums.Alliances;
 import org.firstinspires.ftc.teamcode.vision.AprilTagData;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Vision {
@@ -50,6 +51,12 @@ public class Vision {
     public boolean isLimelightNull() {
         return limelight == null;
     }
+    public double getTx() {
+        return limelight.getLatestResult().getTx();
+    }
+    public int[] getVisibleNumberIds() {
+        return visibleNumberIds;
+    }
     private double getPositionOffset(AprilTagData.TagPosition position) {
         switch (position) {
             case LEFTEST:
@@ -78,42 +85,59 @@ public class Vision {
     }
 
     public boolean withinDeadzone() {
+        if(limelight.getLatestResult().getTx() != 0)
+            return false;
         return Math.abs(estimatedCenterTx) < DEADZONE;
     }
 
     public boolean canSeeUprightAllianceCell(Alliances alliance) {
         if (fiducialResults == null || alliance == null) {
-            return false;
+            //return false;
+            throw new RuntimeException("freak you!!");
         }
 
-        AprilTagData.Cluster[] allianceClusters;
-
-        if (alliance == Alliances.BLUE) {
-            allianceClusters = new AprilTagData.Cluster[]{
-                    AprilTagData.Cluster.BLUE_AUDIENCE,
-                    AprilTagData.Cluster.BLUE_WALL
-            };
-        } else {
-            allianceClusters = new AprilTagData.Cluster[]{
-                    AprilTagData.Cluster.RED_AUDIENCE,
-                    AprilTagData.Cluster.RED_WALL
-            };
-        }
-
-        for (LLResultTypes.FiducialResult tag : fiducialResults) {
-            int id = tag.getFiducialId();
-
-            for (AprilTagData.Cluster cluster : allianceClusters) {
-                if (cluster.contains(id)) {
+//        AprilTagData.Cluster[] allianceClusters;
+//
+//        if (alliance == Alliances.BLUE) {
+//            allianceClusters = new AprilTagData.Cluster[]{
+//                    AprilTagData.Cluster.BLUE_AUDIENCE,
+//                    AprilTagData.Cluster.BLUE_WALL
+//            };
+//        } else {
+//            allianceClusters = new AprilTagData.Cluster[]{
+//                    AprilTagData.Cluster.RED_AUDIENCE,
+//                    AprilTagData.Cluster.RED_WALL
+//            };
+//        }
+//
+//        for (LLResultTypes.FiducialResult tag : fiducialResults) {
+//            int id = tag.getFiducialId();
+//
+//            for (AprilTagData.Cluster cluster : allianceClusters) {
+//                if (cluster.contains(id)) {
+//                    return true;
+//                }
+//            }
+//        }
+//
+//        return false;
+        if(alliance == Alliances.BLUE) {
+            for(int i : visibleNumberIds) {
+                if(i >= 38 && i <= 45)
                     return true;
-                }
+            }
+        }
+        else {
+            for(int i : visibleNumberIds) {
+                if(i >= 30 && i <= 37)
+                    return true;
             }
         }
 
         return false;
     }
 
-    public void updateVision() { //vision? holy gd ref
+    public void updateVision() {
         latestResult = limelight.getLatestResult();
 
         fiducialResults = latestResult != null
@@ -128,7 +152,7 @@ public class Vision {
         double totalCenterEstimate = 0.0;
 
         StringBuilder ids = new StringBuilder();
-        visibleNumberIds = new int[0];
+        ArrayList<Integer> visibleIds = new ArrayList<>();
 
         if (fiducialResults != null) {
             for (LLResultTypes.FiducialResult tag : fiducialResults) {
@@ -156,6 +180,8 @@ public class Vision {
                 totalCenterEstimate += centerEstimate;
                 visibleTagCount++;
 
+                visibleIds.add(id);
+
                 if (ids.length() > 0) {
                     ids.append(", ");
                 }
@@ -167,6 +193,7 @@ public class Vision {
             }
         }
 
+        // Update visible tag averages
         if (visibleTagCount > 0) {
             averageTx = totalTx / visibleTagCount;
 
@@ -177,5 +204,10 @@ public class Vision {
         } else {
             visibleTagIds = "None";
         }
+
+        // Update visible tag ID array every run
+        visibleNumberIds = visibleIds.stream()
+                .mapToInt(Integer::intValue)
+                .toArray();
     }
 }
