@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.enums.Alliances;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
+import org.firstinspires.ftc.teamcode.subsystems.dummies.DumberVision;
 import org.firstinspires.ftc.teamcode.subsystems.dummies.DummyIntake;
 import org.firstinspires.ftc.teamcode.subsystems.dummies.DummyShooter;
 import org.firstinspires.ftc.teamcode.teleop.OpModeStorage;
@@ -43,6 +44,7 @@ public class Robot {
                 s.closeGates
         );
     }
+
     public Command turnToGoal() {
         return Command.build()
                 .setExecute(() -> {
@@ -57,6 +59,8 @@ public class Robot {
                         v.withinDeadzone()
                 );
     }
+
+
 
     public void periodic() {
         d.periodic();

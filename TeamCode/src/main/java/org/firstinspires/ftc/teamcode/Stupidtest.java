@@ -14,7 +14,7 @@ public class Stupidtest extends OpMode {
     }
     @Override
     public void loop() {
-        telemetry.addLine("sloth is very awesome");
+        telemetry.addLine("sloth");
         telemetry.update();
     }
 }

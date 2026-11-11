@@ -33,7 +33,7 @@ public class Drive {
         DrivePowers powers = ManualDrive.fieldCentric(
                 -gamepad.left_stick_y,
                 -gamepad.left_stick_x,
-                gamepad.right_stick_x,
+                -gamepad.right_stick_x,
                 follower.pose().heading()
         );
 
@@ -72,6 +72,10 @@ public class Drive {
 
     public Pose getPose() {
         return follower.pose();
+    }
+
+    public Follower getFollower() {
+        return follower;
     }
 
     public void periodic() {

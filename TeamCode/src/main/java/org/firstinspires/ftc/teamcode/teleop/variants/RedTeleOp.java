@@ -5,7 +5,7 @@ import org.firstinspires.ftc.teamcode.enums.Alliances;
 import org.firstinspires.ftc.teamcode.teleop.Tele;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-@TeleOp
+@TeleOp(name = "! Red Tele")
 public class RedTeleOp extends Tele {
     public RedTeleOp() {
         super(Alliances.RED);

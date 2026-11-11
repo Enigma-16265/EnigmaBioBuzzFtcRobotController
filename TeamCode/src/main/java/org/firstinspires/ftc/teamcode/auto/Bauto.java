@@ -34,17 +34,16 @@ public class Bauto extends OpMode {
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
     private final PoseFactory poseFactory = PoseFactory.degrees();
 
-    // Poses
-    private final Pose start = poseFactory.of(54.75, 7.75, 90);
-    private final Pose strafeToShootPos = poseFactory.of(58.75, 7.75, 90);
+    private final Pose start = poseFactory.of(54.75, 7.75, 270);
+    private final Pose strafeToShootPos = poseFactory.of(58.75, 7.75, 270);
     private final Pose pickupGarden = poseFactory.of(9.75, 8.75, -171.0274);
     private final Pose pickupGardenControl1 = poseFactory.of(47.75, 14.75, 0);
-    private final Pose fromGardenToAudienceCellStart = poseFactory.of(9.75, 8.75, 185);
-    private final Pose fromGardenToAudienceCell = poseFactory.of(58.75, 7.75, 90);
-    private final Pose fromAudienceCellToWallCell = poseFactory.of(58.75, 133.75, 270);
-    private final Pose fromAudienceCellToWallCellSegment1Heading = poseFactory.of(58.75, 133.75, 90);
-    private final Pose fromAudienceCellToWallCellSegment2Start = poseFactory.of(58.75, 133.75, 90);
-    private final Pose fromAudienceCellToWallCellSegment2End = poseFactory.of(58.75, 133.75, 270);
+    private final Pose fromGardenToAudienceCellStart = poseFactory.of(9.75, 8.75, 5);
+    private final Pose fromGardenToAudienceCell = poseFactory.of(58.75, 7.75, 270);
+    private final Pose fromAudienceCellToWallCell = poseFactory.of(58.75, 133.75, -270);
+    private final Pose fromAudienceCellToWallCellSegment1Heading = poseFactory.of(58.75, 133.75, 270);
+    private final Pose fromAudienceCellToWallCellSegment2Start = poseFactory.of(58.75, 133.75, -90);
+    private final Pose fromAudienceCellToWallCellSegment2End = poseFactory.of(58.75, 133.75, 90);
     private final Pose prepareTeammatePush = poseFactory.of(9.75, 60.75, 270);
     private final Pose prepareTeammatePushControl1 = poseFactory.of(10.75, 97.75, 0);
     private final Pose prepareTeammatePushControl2 = poseFactory.of(58.75, 57.75, 0);
@@ -64,7 +63,7 @@ public class Bauto extends OpMode {
     }
 
     public Path fromAudienceCellToWallCell() {
-        return Paths.line(fromGardenToAudienceCell, fromAudienceCellToWallCell).heading(Interpolator.piecewise().until(0.6, Interpolator.constant(fromAudienceCellToWallCellSegment1Heading)).until(1, Interpolator.linear(fromAudienceCellToWallCellSegment2Start, fromAudienceCellToWallCellSegment2End)));
+        return Paths.line(fromGardenToAudienceCell, fromAudienceCellToWallCell).heading(Interpolator.piecewise().until(0.75, Interpolator.constant(fromAudienceCellToWallCellSegment1Heading)).until(1, Interpolator.linear(fromAudienceCellToWallCellSegment2Start, fromAudienceCellToWallCellSegment2End)));
     }
 
     public Path prepareTeammatePush() {
