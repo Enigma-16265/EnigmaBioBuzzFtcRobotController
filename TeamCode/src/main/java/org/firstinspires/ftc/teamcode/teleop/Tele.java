@@ -36,6 +36,8 @@ public class Tele extends OpMode {
         telemetry.addData("tx", r.v.getTx());
         telemetry.addData("get fps", r.v.getStatus().getFps());
         telemetry.addLine("-------------");
+        telemetry.addData("focused cell name", r.v.getFocusedCellName());
+        telemetry.addData("focused cell estimated tx", r.v.getFocusedCellCenterTx());
 
 //        telemetry.addData("Cluster", r.v.getSelectedCluster());
 //        telemetry.addData("Visible Tags", r.v.getVisibleTagIds());

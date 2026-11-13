@@ -21,14 +21,18 @@ public class Vision {
     private LLResult latestResult;
     private List<LLResultTypes.FiducialResult> fiducialResults;
 
-    private final AprilTagData.Cluster[] clusters =
-            AprilTagData.Cluster.values();
+    private Alliances alliance;
 
-    private int selectedClusterIndex = 0;
+    private AprilTagData.Cluster wallCluster;
+    private AprilTagData.Cluster audienceCluster;
+    private AprilTagData.Cluster selectedCluster;
 
     private int visibleTagCount = 0;
     private int[] visibleNumberIds = new int[0];
     private String visibleTagIds = "None";
+
+    private int wallTagCount = 0;
+    private int audienceTagCount = 0;
 
     private double averageTx = 0.0;
     private double estimatedCenterTx = 0.0;
@@ -41,10 +45,36 @@ public class Vision {
     private static final double RIGHTEST_OFFSET = 7.5;
 
     public Vision(HardwareMap hardwareMap, Alliances alliance) {
+
         limelight = hardwareMap.get(
                 Limelight3A.class,
                 "limelight"
         );
+
+        setAlliance(alliance);
+    }
+
+    public void setAlliance(Alliances alliance) {
+
+        this.alliance = alliance;
+
+        if (alliance == Alliances.RED) {
+
+            wallCluster = AprilTagData.Cluster.RED_WALL;
+            audienceCluster = AprilTagData.Cluster.RED_AUDIENCE;
+
+        } else if (alliance == Alliances.BLUE) {
+
+            wallCluster = AprilTagData.Cluster.BLUE_WALL;
+            audienceCluster = AprilTagData.Cluster.BLUE_AUDIENCE;
+
+        } else {
+
+            wallCluster = null;
+            audienceCluster = null;
+        }
+
+        selectedCluster = null;
     }
 
     public void startVision() {
@@ -92,34 +122,22 @@ public class Vision {
     }
 
     public AprilTagData.Cluster getSelectedCluster() {
-        return selectedCluster();
+        return selectedCluster;
     }
 
-    private AprilTagData.Cluster selectedCluster() {
-        return clusters[selectedClusterIndex];
+    public int getWallTagCount() {
+        return wallTagCount;
     }
 
-    public void setSelectedCluster(int index) {
-        if (index >= 0 && index < clusters.length) {
-            selectedClusterIndex = index;
-        }
-    }
-
-    public void nextCluster() {
-        selectedClusterIndex =
-                (selectedClusterIndex + 1) % clusters.length;
-    }
-
-    public void previousCluster() {
-        selectedClusterIndex =
-                (selectedClusterIndex - 1 + clusters.length)
-                        % clusters.length;
+    public int getAudienceTagCount() {
+        return audienceTagCount;
     }
 
     private double getPositionOffset(
             AprilTagData.TagPosition position
     ) {
         switch (position) {
+
             case LEFTEST:
                 return LEFTEST_OFFSET;
 
@@ -137,7 +155,25 @@ public class Vision {
         }
     }
 
-    // AprilTag cluster-center detection
+    private void selectBestCluster() {
+
+        if (wallTagCount > audienceTagCount) {
+
+            selectedCluster = wallCluster;
+
+        } else if (audienceTagCount > wallTagCount) {
+
+            selectedCluster = audienceCluster;
+
+        } else if (wallTagCount == 0) {
+
+            selectedCluster = null;
+        }
+
+        // If counts are tied and tags are visible,
+        // retain the previous selection.
+    }
+
     public void updateVision() {
 
         latestResult = limelight.getLatestResult();
@@ -147,6 +183,9 @@ public class Vision {
                 : null;
 
         visibleTagCount = 0;
+        wallTagCount = 0;
+        audienceTagCount = 0;
+
         averageTx = 0.0;
         estimatedCenterTx = 0.0;
 
@@ -162,13 +201,37 @@ public class Vision {
 
                 int id = tag.getFiducialId();
 
-                // Ignore tags outside the selected cluster
-                if (!selectedCluster().contains(id)) {
+                // Record every visible tag
+                visibleIds.add(id);
+
+                // Count alliance-specific wall tags
+                if (wallCluster != null && wallCluster.contains(id)) {
+                    wallTagCount++;
+                }
+
+                // Count alliance-specific audience tags
+                if (audienceCluster != null && audienceCluster.contains(id)) {
+                    audienceTagCount++;
+                }
+            }
+        }
+
+        // Automatically choose the best-visible cluster
+        selectBestCluster();
+
+        // Calculate center using ONLY the selected cluster
+        if (fiducialResults != null && selectedCluster != null) {
+
+            for (LLResultTypes.FiducialResult tag : fiducialResults) {
+
+                int id = tag.getFiducialId();
+
+                if (!selectedCluster.contains(id)) {
                     continue;
                 }
 
                 AprilTagData.TagPosition position =
-                        selectedCluster().getPosition(id);
+                        selectedCluster.getPosition(id);
 
                 if (position == null) {
                     continue;
@@ -179,7 +242,6 @@ public class Vision {
                 double positionOffset =
                         getPositionOffset(position);
 
-                // Estimate where the center of the cluster is
                 double centerEstimate =
                         tx - positionOffset;
 
@@ -187,7 +249,6 @@ public class Vision {
                 totalCenterEstimate += centerEstimate;
 
                 visibleTagCount++;
-                visibleIds.add(id);
 
                 if (ids.length() > 0) {
                     ids.append(", ");
@@ -214,7 +275,6 @@ public class Vision {
             visibleTagIds = "None";
         }
 
-        // Update visible IDs
         visibleNumberIds = visibleIds.stream()
                 .mapToInt(Integer::intValue)
                 .toArray();
@@ -222,11 +282,14 @@ public class Vision {
 
     public double getNeededHeading(Follower follower) {
 
-        return follower.pose().heading() - Math.toRadians(estimatedCenterTx);
+        return follower.pose().heading()
+                - Math.toRadians(estimatedCenterTx);
     }
 
     public boolean withinDeadzone() {
-        return visibleNumberIds.length > 0 && Math.abs(estimatedCenterTx) < DEADZONE;
+
+        return visibleTagCount > 0
+                && Math.abs(estimatedCenterTx) < DEADZONE;
     }
 
     public boolean canSeeUprightAllianceCell(Alliances alliance) {
@@ -237,14 +300,14 @@ public class Vision {
 
         for (int id : visibleNumberIds) {
 
-
             if (alliance == Alliances.BLUE) {
 
                 if (id >= 38 && id <= 45) {
                     return true;
                 }
 
-            } else {
+            } else if (alliance == Alliances.RED) {
+
                 if (id >= 30 && id <= 37) {
                     return true;
                 }
@@ -252,5 +315,32 @@ public class Vision {
         }
 
         return false;
+    }
+
+    public String getFocusedCellName() {
+
+        if (selectedCluster == null) {
+            return "NONE";
+        }
+
+        switch (selectedCluster) {
+
+            case RED_WALL:
+            case BLUE_WALL:
+                return "WALL";
+
+            case RED_AUDIENCE:
+            case BLUE_AUDIENCE:
+                return "AUDIENCE";
+
+            default:
+                return "NONE";
+        }
+    }
+
+    public double getFocusedCellCenterTx() {
+        return selectedCluster != null && visibleTagCount > 0
+                ? estimatedCenterTx
+                : 0.0;
     }
 }
