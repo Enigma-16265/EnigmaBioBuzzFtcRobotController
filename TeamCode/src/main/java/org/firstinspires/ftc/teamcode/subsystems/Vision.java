@@ -200,7 +200,6 @@ public class Vision {
             }
         }
 
-        // Calculate averages
         if (visibleTagCount > 0) {
 
             averageTx = totalTx / visibleTagCount;
@@ -221,17 +220,13 @@ public class Vision {
                 .toArray();
     }
 
-    // Returns the estimated heading needed to center on the cluster
     public double getNeededHeading(Follower follower) {
 
-        return follower.pose().heading()
-                - Math.toRadians(estimatedCenterTx);
+        return follower.pose().heading() - Math.toRadians(estimatedCenterTx);
     }
 
     public boolean withinDeadzone() {
-
-        return visibleTagCount > 0
-                && Math.abs(estimatedCenterTx) < DEADZONE;
+        return visibleNumberIds.length > 0 && Math.abs(estimatedCenterTx) < DEADZONE;
     }
 
     public boolean canSeeUprightAllianceCell(Alliances alliance) {
@@ -242,6 +237,7 @@ public class Vision {
 
         for (int id : visibleNumberIds) {
 
+
             if (alliance == Alliances.BLUE) {
 
                 if (id >= 38 && id <= 45) {
@@ -249,7 +245,6 @@ public class Vision {
                 }
 
             } else {
-
                 if (id >= 30 && id <= 37) {
                     return true;
                 }

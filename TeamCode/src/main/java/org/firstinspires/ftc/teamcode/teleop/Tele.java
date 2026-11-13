@@ -37,10 +37,10 @@ public class Tele extends OpMode {
         telemetry.addData("get fps", r.v.getStatus().getFps());
         telemetry.addLine("-------------");
 
-        telemetry.addData("Cluster", r.v.getSelectedCluster());
-        telemetry.addData("Visible Tags", r.v.getVisibleTagIds());
-        telemetry.addData("Estimated Center TX", r.v.getEstimatedCenterTx());
-        telemetry.addData("Centered", r.v.withinDeadzone());
+//        telemetry.addData("Cluster", r.v.getSelectedCluster());
+//        telemetry.addData("Visible Tags", r.v.getVisibleTagIds());
+//        telemetry.addData("Estimated Center TX", r.v.getEstimatedCenterTx());
+//        telemetry.addData("Centered", r.v.withinDeadzone());
 
         telemetry.update();
     }

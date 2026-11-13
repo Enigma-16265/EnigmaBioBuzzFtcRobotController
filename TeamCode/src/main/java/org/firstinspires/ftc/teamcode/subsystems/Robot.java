@@ -56,7 +56,7 @@ public class Robot {
                     }
                 })
                 .setDone(() ->
-                        v.withinDeadzone()
+                        v.withinDeadzone() //|| !d.getFollower().isBusy()
                 );
     }
 
