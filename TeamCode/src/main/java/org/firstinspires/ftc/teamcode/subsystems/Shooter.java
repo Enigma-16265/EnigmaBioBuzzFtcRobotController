@@ -84,7 +84,7 @@ public class Shooter {
 
     public void runShooterPIDs() {
         runPollenShooterPID();
-        runNectarShooterPID();
+        //runNectarShooterPID();
     }
 
     public double getPollenShooterVelocity() {
