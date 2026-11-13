@@ -6,6 +6,7 @@ import static com.pedropathing.ivy.groups.Groups.sequential;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.ivy.Command;
 import com.pedropathing.ivy.CommandBuilder;
+import com.pedropathing.utils.Timer;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.enums.Alliances;
@@ -22,6 +23,7 @@ public class Robot {
     public DummyShooter s;
     public Vision v;
     private Follower follower;
+    private Timer turnTimer;
 
     public Robot(HardwareMap hardwareMap, Alliances alliance) {
         follower = Constants.create(hardwareMap);
@@ -47,6 +49,10 @@ public class Robot {
 
     public Command turnToGoal() {
         return Command.build()
+                .setStart(() -> {
+                    turnTimer = new Timer();
+                    turnTimer.reset();
+                })
                 .setExecute(() -> {
                     if(v.canSeeUprightAllianceCell(alliance)) {
                         d.turnToHeadingInPlace(v);
@@ -56,7 +62,7 @@ public class Robot {
                     }
                 })
                 .setDone(() ->
-                        v.withinDeadzone() //|| !d.getFollower().isBusy()
+                        v.withinDeadzone() || turnTimer.milliseconds() >= 700 //|| !d.getFollower().isBusy()
                 );
     }
 

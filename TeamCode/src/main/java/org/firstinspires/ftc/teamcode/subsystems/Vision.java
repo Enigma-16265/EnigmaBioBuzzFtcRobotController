@@ -37,7 +37,7 @@ public class Vision {
     private double averageTx = 0.0;
     private double estimatedCenterTx = 0.0;
 
-    private static final double DEADZONE = 0.5;
+    private static final double DEADZONE = 1.0;
 
     private static final double LEFTEST_OFFSET = -7.5;
     private static final double LEFT_OFFSET = -4.0;
