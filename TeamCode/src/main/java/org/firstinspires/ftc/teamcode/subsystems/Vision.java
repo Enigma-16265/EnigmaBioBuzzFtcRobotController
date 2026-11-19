@@ -40,10 +40,10 @@ public class Vision {
 
     private static final double DEADZONE = 1.0;
 
-    private static final double LEFTEST_OFFSET = -7.5;
-    private static final double LEFT_OFFSET = -4.0;
-    private static final double RIGHT_OFFSET = 4.0;
-    private static final double RIGHTEST_OFFSET = 7.5;
+    private static final double LEFTEST_OFFSET = 7.5;
+    private static final double LEFT_OFFSET = 4.0;
+    private static final double RIGHT_OFFSET = -4.0;
+    private static final double RIGHTEST_OFFSET = -7.5;
 
     public Vision(HardwareMap hardwareMap, Alliances alliance) {
 
@@ -134,9 +134,7 @@ public class Vision {
         return audienceTagCount;
     }
 
-    private double getPositionOffset(
-            AprilTagData.TagPosition position
-    ) {
+    private double getPositionOffset(AprilTagData.TagPosition position) {
         switch (position) {
 
             case LEFTEST:
@@ -231,8 +229,7 @@ public class Vision {
                     continue;
                 }
 
-                AprilTagData.TagPosition position =
-                        selectedCluster.getPosition(id);
+                AprilTagData.TagPosition position = selectedCluster.getPosition(id);
 
                 if (position == null) {
                     continue;
@@ -240,11 +237,9 @@ public class Vision {
 
                 double tx = tag.getTargetXDegrees();
 
-                double positionOffset =
-                        getPositionOffset(position);
+                double positionOffset = getPositionOffset(position);
 
-                double centerEstimate =
-                        tx - positionOffset;
+                double centerEstimate = tx + positionOffset;
 
                 totalTx += tx;
                 totalCenterEstimate += centerEstimate;
@@ -339,16 +334,26 @@ public class Vision {
         }
     }
 
-    public double getDistanceToFiduical() {
+    public double getDistanceToFiducial() {
         LLResult result = limelight.getLatestResult();
 
         if(result != null && result.isValid()) {
             LLResultTypes.FiducialResult tag = result.getFiducialResults().get(0);
 
-
             Pose3D pose = tag.getTargetPoseRobotSpace();
 
-            double x = pose.getPosition().x;
+            AprilTagData.TagPosition position = null;
+
+            for (AprilTagData.Cluster cluster : AprilTagData.Cluster.values()) {
+                if (cluster.contains(tag.getFiducialId())) {
+                    position = cluster.getPosition(tag.getFiducialId());
+                    break;
+                }
+            }
+
+            double offset = getPositionOffset(position);
+
+            double x = pose.getPosition().x + offset;
             double z = pose.getPosition().z;
 
             double distance = Math.sqrt((x * x) + (z * z));
