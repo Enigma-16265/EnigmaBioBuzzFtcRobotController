@@ -21,9 +21,10 @@ public class Shooter {
     private final double NECTAR_GATE_CLOSE_POS = 0.4;
     private final int[] pollenShooterSpeeds = {1200, 1250, 1300, 1350};
     private final double[] pollenHoodPoses = {0.5, 0.53, 0.56, 0.59}; //important tweak values
+    private final int[] nectarShooterSpeeds = {1300, 1350, 1400, 1450};
+    private final double[] nectarHoodPoses = {0.5, 0.53, 0.56, 0.59};
     private final double[] distanceThresholds = {44, 47, 50, 53, 56};
     private DcMotorEx pollenShooter, nectarShooter;
-    private DcMotor intakeLeft, intakeRight;
     private Servo pollenGate, nectarGate;
     private Servo pollenHood, nectarHood;
     public Shooter(HardwareMap hardwareMap) {
@@ -104,6 +105,28 @@ public class Shooter {
         return pollenHoodPoses[getDistanceIndex(index)];
     }
 
+    private int desiredNectarSpeedBasedOnDistance(Vision v) {
+        double distance = v.getDistanceToFiducial();
+        double index = getDistanceIndex(distance);
+
+        if(index == -1) {
+            return nectarTargetSpeed;
+        }
+
+        return nectarShooterSpeeds[getDistanceIndex(index)];
+    }
+
+    private double desiredNectarHoodPosBasedOnDistance(Vision v) {
+        double distance = v.getDistanceToFiducial();
+        double index = getDistanceIndex(distance);
+
+        if(index == -1) {
+            return nectarHood.getPosition();
+        }
+
+        return nectarHoodPoses[getDistanceIndex(index)];
+    }
+
     private int getDistanceIndex(double distance) {
         if(isBetweenXY(distance, distanceThresholds[0], distanceThresholds[1]))
             return 0;
@@ -127,7 +150,7 @@ public class Shooter {
 //        )
 //    }
 
-    public void setShooterBasedOnDistance(Vision v) {
+    public void setShootersBasedOnDistance(Vision v) {
         pollenTargetSpeed = desiredPollenSpeedBasedOnDistance(v);
         pollenHood.setPosition(desiredPollenHoodPosBasedOnDistance(v));
     }
