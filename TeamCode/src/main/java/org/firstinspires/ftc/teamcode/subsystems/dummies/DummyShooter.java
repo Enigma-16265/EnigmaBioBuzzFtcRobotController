@@ -1,11 +1,15 @@
 package org.firstinspires.ftc.teamcode.subsystems.dummies;
 
 import com.arcrobotics.ftclib.controller.PIDController;
+import com.pedropathing.follower.Follower;
 import com.pedropathing.ivy.Command;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.teamcode.enums.Alliances;
+import org.firstinspires.ftc.teamcode.subsystems.Vision;
 
 /**
  * This class handles everything related to the shooter, including a potential turret.
@@ -58,6 +62,10 @@ public class DummyShooter {
     public void runShooterPIDs() {
         runPollenShooterPID();
         runNectarShooterPID();
+    }
+
+    public void setSpeedBasedOnDistance(Vision v) {
+
     }
 
     public double getPollenShooterVelocity() {

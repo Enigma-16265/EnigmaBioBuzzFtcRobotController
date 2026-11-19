@@ -8,6 +8,7 @@ import com.qualcomm.hardware.limelightvision.LLStatus;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.teamcode.enums.Alliances;
 import org.firstinspires.ftc.teamcode.vision.AprilTagData;
 
@@ -336,6 +337,26 @@ public class Vision {
             default:
                 return "NONE";
         }
+    }
+
+    public double getDistanceToFiduical() {
+        LLResult result = limelight.getLatestResult();
+
+        if(result != null && result.isValid()) {
+            LLResultTypes.FiducialResult tag = result.getFiducialResults().get(0);
+
+
+            Pose3D pose = tag.getTargetPoseRobotSpace();
+
+            double x = pose.getPosition().x;
+            double z = pose.getPosition().z;
+
+            double distance = Math.sqrt((x * x) + (z * z));
+
+            return distance;
+        }
+
+        return -1;
     }
 
     public double getFocusedCellCenterTx() {
