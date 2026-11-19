@@ -64,7 +64,7 @@ public class DummyShooter {
         runNectarShooterPID();
     }
 
-    public void setSpeedBasedOnDistance(Vision v) {
+    public void setShooterBasedOnDistance(Vision v) {
 
     }
 

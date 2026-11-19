@@ -1,14 +1,11 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.arcrobotics.ftclib.controller.PIDController;
-import com.pedropathing.follower.Follower;
 import com.pedropathing.ivy.Command;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
-
-import org.firstinspires.ftc.teamcode.enums.Alliances;
 
 /**
  * This class handles everything related to the shooter, including a potential turret.
@@ -22,7 +19,9 @@ public class Shooter {
     private final double POLLEN_GATE_CLOSE_POS = 0.4;
     private final double NECTAR_GATE_OPEN_POS = 0.6;
     private final double NECTAR_GATE_CLOSE_POS = 0.4;
-    private final int[] shooterSpeeds = {1200, 1250, 1300, 1350,};
+    private final int[] pollenShooterSpeeds = {1200, 1250, 1300, 1350};
+    private final double[] pollenHoodPoses = {0.5, 0.53, 0.56, 0.59}; //important tweak values
+    private final double[] distanceThresholds = {44, 48, 54, 60, 66};
     private DcMotorEx pollenShooter, nectarShooter;
     private DcMotor intakeLeft, intakeRight;
     private Servo pollenGate, nectarGate;
@@ -83,7 +82,7 @@ public class Shooter {
     public double getPollenHoodPos() {return pollenHood.getPosition();}
     public double getNectarHoodPos() {return nectarHood.getPosition();}
 
-    private int getSpeedBasedOnDistance(Vision v) {
+    private int desiredPollenSpeedBasedOnDistance(Vision v) {
         double distance = v.getDistanceToFiduical();
         double index = getDistanceIndex(distance);
 
@@ -91,17 +90,28 @@ public class Shooter {
             return pollenTargetSpeed;
         }
 
-        return shooterSpeeds[getDistanceIndex(index)];
+        return pollenShooterSpeeds[getDistanceIndex(index)];
+    }
+
+    private double desiredPollenHoodPosBasedOnDistance(Vision v) {
+        double distance = v.getDistanceToFiduical();
+        double index = getDistanceIndex(distance);
+
+        if(index == -1) {
+            return pollenHood.getPosition();
+        }
+
+        return pollenHoodPoses[getDistanceIndex(index)];
     }
 
     private int getDistanceIndex(double distance) {
-        if(isBetweenXY(distance, 44, 48))
+        if(isBetweenXY(distance, distanceThresholds[0], distanceThresholds[1]))
             return 0;
-        if(isBetweenXY(distance, 48, 54))
+        if(isBetweenXY(distance, distanceThresholds[1], distanceThresholds[2]))
             return 1;
-        if(isBetweenXY(distance, 54, 60))
+        if(isBetweenXY(distance, distanceThresholds[2], distanceThresholds[3]))
             return 2;
-        if(isBetweenXY(distance, 60, 66))
+        if(isBetweenXY(distance, distanceThresholds[3], distanceThresholds[4]))
             return 3;
 
         return -1;
@@ -117,8 +127,9 @@ public class Shooter {
 //        )
 //    }
 
-    public void setSpeedBasedOnDistance(Vision v) {
-        pollenTargetSpeed = getSpeedBasedOnDistance(v);
+    public void setShooterBasedOnDistance(Vision v) {
+        pollenTargetSpeed = desiredPollenSpeedBasedOnDistance(v);
+        pollenHood.setPosition(desiredPollenHoodPosBasedOnDistance(v));
     }
 
 

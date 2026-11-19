@@ -70,6 +70,6 @@ public class Robot {
 
     public void periodic() {
         d.periodic();
-        s.setSpeedBasedOnDistance(v);
+        s.setShooterBasedOnDistance(v);
     }
 }
