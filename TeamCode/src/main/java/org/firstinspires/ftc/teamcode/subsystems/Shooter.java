@@ -4,6 +4,7 @@ import com.arcrobotics.ftclib.controller.PIDController;
 import com.pedropathing.ivy.Command;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -12,18 +13,19 @@ import com.qualcomm.robotcore.hardware.Servo;
  */
 public class Shooter {
     private PIDController pollenController, nectarController;
-    private int pollenTargetSpeed = 800, nectarTargetSpeed = 1100;
-    private final double pP = 0.01, pI = 0.0, pD = 0.0;
+    private int pollenTargetSpeed = 1080, nectarTargetSpeed = 1100;
+    private final double pP = 0.017, pI = 0.0, pD = 0.0;
     private final double nP = 0.0, nI = 0.0, nD = 0.0;
-    private final double POLLEN_GATE_OPEN_POS = 0.6;
-    private final double POLLEN_GATE_CLOSE_POS = 0.4;
+    private final double POLLEN_GATE_OPEN_POS = 0.28;
+    private final double POLLEN_GATE_CLOSE_POS = 0.1;
     private final double NECTAR_GATE_OPEN_POS = 0.6;
     private final double NECTAR_GATE_CLOSE_POS = 0.4;
     private final int[] pollenShooterSpeeds = {1200, 1250, 1300, 1350};
-    private final double[] pollenHoodPoses = {0.5, 0.53, 0.56, 0.59}; //important tweak values
+    private final double[] pollenHoodPoses = {0.53, 0.56, 0.59, 0.62}; //important tweak values
     private final int[] nectarShooterSpeeds = {1300, 1350, 1400, 1450};
     private final double[] nectarHoodPoses = {0.5, 0.53, 0.56, 0.59};
     private final double[] distanceThresholds = {44, 47, 50, 53, 56};
+    private boolean shooterOn = false;
     private DcMotorEx pollenShooter, nectarShooter;
     private Servo pollenGate, nectarGate;
     private Servo pollenHood, nectarHood;
@@ -32,10 +34,8 @@ public class Shooter {
         nectarController = new PIDController(nP, nI, nD);
 
         pollenShooter = hardwareMap.get(DcMotorEx.class, "pollenShooter");
-        //nectarShooter = hardwareMap.get(DcMotorEx.class, "nectarShooter");
-
-        //intakeLeft = hardwareMap.get(DcMotor.class, "intakeLeft");
-        //intakeRight = hardwareMap.get(DcMotor.class, "intakeRight");
+        pollenShooter.setDirection(DcMotorSimple.Direction.REVERSE);
+        nectarShooter = hardwareMap.get(DcMotorEx.class, "nectarShooter");
 
         pollenGate = hardwareMap.get(Servo.class, "pollenGate");
         //nectarGate = hardwareMap.get(Servo.class, "nectarGate");
@@ -51,6 +51,7 @@ public class Shooter {
 
         shooterPid = Math.max(shooterPid, -0.2);
         pollenShooter.setPower(shooterPid);
+        nectarShooter.setPower(shooterPid);
     }
     public void runNectarShooterPID() {
         double currentVelocity = nectarShooter.getVelocity();
@@ -68,13 +69,13 @@ public class Shooter {
     public Command openGates = Command.build()
             .setStart(() -> {
                 pollenGate.setPosition(POLLEN_GATE_OPEN_POS);
-                nectarGate.setPosition(NECTAR_GATE_OPEN_POS);
+                //nectarGate.setPosition(NECTAR_GATE_OPEN_POS);
             })
             .setDone(() -> true);
     public Command closeGates = Command.build()
             .setStart(() -> {
-                pollenGate.setPosition(POLLEN_GATE_OPEN_POS);
-                nectarGate.setPosition(NECTAR_GATE_OPEN_POS);
+                pollenGate.setPosition(POLLEN_GATE_CLOSE_POS);
+                //nectarGate.setPosition(NECTAR_GATE_CLOSE_POS);
             })
             .setDone(() -> true);
 
@@ -155,9 +156,22 @@ public class Shooter {
         pollenHood.setPosition(desiredPollenHoodPosBasedOnDistance(v));
     }
 
+    public void toggleShooter() {
+        shooterOn = !shooterOn;
+    }
+    public boolean isShooterOn() {
+        return shooterOn;
+    }
+
 
     public void runShooterPIDs() {
-        runPollenShooterPID();
+        if(shooterOn)
+            runPollenShooterPID();
+        else {
+            pollenShooter.setPower(0);
+            nectarShooter.setPower(0);
+        }
+
         //runNectarShooterPID();
     }
 

@@ -18,31 +18,35 @@ import org.firstinspires.ftc.teamcode.teleop.OpModeStorage;
 public class Robot {
     private Alliances alliance;
     public Drive d;
-    public DummyIntake i;
-    public DummyShooter s;
+    public Intake i;
+    public Shooter s;
     public Vision v;
     private Follower follower;
     private Timer turnTimer;
+    private boolean isShooting = false;
 
     public Robot(HardwareMap hardwareMap, Alliances alliance) {
         follower = Constants.create(hardwareMap);
         follower.setPose(OpModeStorage.autonomousEndPose);
 
         d = new Drive(hardwareMap);
-        i = new DummyIntake(hardwareMap);
-        s = new DummyShooter(hardwareMap);
+        i = new Intake(hardwareMap);
+        s = new Shooter(hardwareMap);
         v = new Vision(hardwareMap, alliance);
 
         this.alliance = alliance;
     }
     public CommandBuilder shoot() {
         return sequential(
+                setShooting(true),
                 s.openGates,
                 waitMs(150),
                 i.setFeeding,
-                waitMs(450),
+                waitMs(2500),
+                setShooting(false),
                 i.stopIntake,
                 s.closeGates
+
         );
     }
 
@@ -69,6 +73,18 @@ public class Robot {
 
     public void periodic() {
         d.periodic();
-        s.setShootersBasedOnDistance(v);
+        //s.setShootersBasedOnDistance(v);
+    }
+
+    public boolean isShooting() {
+        return isShooting;
+    }
+
+    public Command setShooting(boolean shooting) {
+        return Command.build()
+                .setStart(() -> {
+                    isShooting = shooting;
+                })
+                .setDone(() -> true);
     }
 }

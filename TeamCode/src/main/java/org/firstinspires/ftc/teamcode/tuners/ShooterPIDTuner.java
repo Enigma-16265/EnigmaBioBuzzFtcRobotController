@@ -39,6 +39,7 @@ public class ShooterPIDTuner extends OpMode {
 
         shooterPid = Math.max(shooterPid, -0.2);
         pollenShooter.setPower(shooterPid);
+        nectarShooter.setPower(shooterPid);
     }
     public void runNectarShooterPID() {
         double currentVelocity = nectarShooter.getVelocity();
@@ -62,7 +63,7 @@ public class ShooterPIDTuner extends OpMode {
         nectarController = new PIDController(nP, nI, nD);
 
         pollenShooter = hardwareMap.get(DcMotorEx.class, "pollenShooter");
-        //nectarShooter = hardwareMap.get(DcMotorEx.class, "nectarShooter");
+        nectarShooter = hardwareMap.get(DcMotorEx.class, "nectarShooter");
 
         pollenShooter.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -78,6 +79,7 @@ public class ShooterPIDTuner extends OpMode {
     @Override
     public void init_loop() {
         pollenShooter.setPower(0.3);
+        nectarShooter.setPower(0.3);
     }
 
     @Override

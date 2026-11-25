@@ -29,14 +29,16 @@ public class Tele extends OpMode {
         telemetry.addData("Heading", Math.toDegrees(r.d.getPose().heading()));
         telemetry.addData("can see upright cell", r.v.canSeeUprightAllianceCell(alliance));
         telemetry.addData("within deadzone", r.v.withinDeadzone());
-        for(int i : r.v.getVisibleNumberIds()) {
-            telemetry.addData("id", i);
-        }
-        telemetry.addData("vision ids", r.v.getVisibleNumberIds());
-        telemetry.addData("tx", r.v.getTx());
-        telemetry.addData("get fps", r.v.getStatus().getFps());
-        telemetry.addLine("-------------");
-        telemetry.addData("focused cell name", r.v.getFocusedCellName());
+        //for(int i : r.v.getVisibleNumberIds()) {
+        //    telemetry.addData("id", i);
+        //}
+        telemetry.addData("shooter on", r.s.isShooterOn());
+        telemetry.addData("shooter vel", r.s.getPollenShooterVelocity());
+        //telemetry.addData("vision ids", r.v.getVisibleNumberIds());
+        //telemetry.addData("tx", r.v.getTx());
+        //telemetry.addData("get fps", r.v.getStatus().getFps());
+        //telemetry.addLine("-------------");
+        //telemetry.addData("focused cell name", r.v.getFocusedCellName());
         telemetry.addData("focused cell estimated tx", r.v.getFocusedCellCenterTx());
 
 //        telemetry.addData("Cluster", r.v.getSelectedCluster());
@@ -52,6 +54,7 @@ public class Tele extends OpMode {
     @Override
     public void init() {
         r = new Robot(hardwareMap, alliance);
+        Scheduler.schedule(r.s.closeGates);
     }
 
     @Override
@@ -63,9 +66,15 @@ public class Tele extends OpMode {
     public void loop() {
         r.periodic();
         r.d.drive(gamepad1);
-        r.i.runIntake(gamepad1);
+
+        if(!r.isShooting())
+            r.i.runIntake(gamepad1);
+
         r.s.runShooterPIDs();
         r.v.updateVision();
+
+        if(gamepad1.rightBumperWasPressed())
+            r.s.toggleShooter();
 
         if(gamepad1.xWasPressed()) {
             Scheduler.schedule(r.shoot());

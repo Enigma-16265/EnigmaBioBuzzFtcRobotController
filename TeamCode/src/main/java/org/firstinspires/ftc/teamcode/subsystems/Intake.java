@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.pedropathing.ivy.Command;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -11,12 +12,14 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
  */
 public class Intake {
     private DcMotor intakeLeft, intakeRight;
-    private final double INTAKE_POWER = 0.8;
-    private final double FEED_POWER = 0.6;
-    private final double OUTTAKE_POWER = -0.4;
+    private final double INTAKE_POWER = 1.0;
+    private final double FEED_POWER = 1.0;
+    private final double OUTTAKE_POWER = -0.8;
     public Intake(HardwareMap hardwareMap) {
         intakeLeft = hardwareMap.get(DcMotor.class, "intakeLeft");
         intakeRight = hardwareMap.get(DcMotor.class, "intakeRight");
+
+        intakeLeft.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
     public Command setFeeding = Command.build()
@@ -41,5 +44,8 @@ public class Intake {
             setPower(INTAKE_POWER);
         else if(gamepad.left_trigger_pressed)
             setPower(OUTTAKE_POWER);
+        else {
+            setPower(0);
+        }
     }
 }

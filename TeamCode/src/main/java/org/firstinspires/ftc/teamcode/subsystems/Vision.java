@@ -278,8 +278,9 @@ public class Vision {
 
     public double getNeededHeading(Follower follower) {
 
-        return follower.pose().heading()
-                - Math.toRadians(estimatedCenterTx);
+        return follower.pose().heading() - Math.toRadians(estimatedCenterTx) + Math.PI;
+
+        //return heading % (2 * Math.PI);
     }
 
     public boolean withinDeadzone() {
