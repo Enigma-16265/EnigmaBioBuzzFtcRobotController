@@ -235,7 +235,7 @@ public class Vision {
                     continue;
                 }
 
-                double tx = tag.getTargetXDegrees();
+                double tx = tag.getTargetYDegrees(); //IMPORTANT
 
                 double positionOffset = getPositionOffset(position);
 
